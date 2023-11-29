@@ -19,23 +19,28 @@ def filter_datum(fields: List[str], redaction: str,
     Return
     ------
     """
-    message_in_dict = {}
-    paires = message.split(separator)
-    for paire in paires:
-        pair = paire.split('=')
-        if len(pair) == 2:
-            key, value = pair
-        message_in_dict[key] = value
+    for field in fields:
+        pattern = f"{field}=.*?{separator}"
+        message = re.sub(pattern, f"{field}={redaction}{separator}", message)
+    return message
 
-    for key in message_in_dict:
-        if key in fields:
-            obfuscated = re.sub(message_in_dict[key], f"{redaction}",
-                                message_in_dict[key])
-            message_in_dict[key] = obfuscated
 
-    obfuscated_list = list(message_in_dict.items())
+# def get_logger() -> logging.logger:
 
-    obfuscated_message = separator.join([f"{key}={value}"
-                                        for key, value in obfuscated_list])
 
-    return obfuscated_message+separator
+class RedactingFormatter(logging.Formatter):
+    """ Redacting Formatter class
+        """
+
+    REDACTION = "***"
+    FORMAT = "[HOLBERTON] %(name)s %(levelname)s %(asctime)-15s: %(message)s"
+    SEPARATOR = ";"
+
+    def __init__(self, fields: List[str]):
+        super(RedactingFormatter, self).__init__(self.FORMAT)
+        self.fields = fields
+
+    def format(self, record: logging.LogRecord) -> str:
+        record.msg = filter_datum(self.fields, self.REDACTION,
+                                  record.msg, self.SEPARATOR)
+        return super(RedactingFormatter, self).format(record)
