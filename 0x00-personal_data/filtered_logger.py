@@ -43,6 +43,7 @@ def get_logger() -> logging.Logger:
     logger.propagate = False
     logger.setLevel(logging.INFO)
     h = logging.StreamHandler()
+    h.setFormatter(RedactingFormatter())
     logger.addHandler(h)
 
     return logger
