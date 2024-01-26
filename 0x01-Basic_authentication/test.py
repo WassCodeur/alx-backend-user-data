@@ -1,29 +1,22 @@
-from flask import Flask, request
+import re
 
-app = Flask(__name__)
+#pattern = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+:[a-zA-Z0-9_]+$'
+#pattern = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+:[a-zA-Z0-9_]+$'
+pattern = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]+:[a-zA-Z0-9_.+-]+$'
 
-# Function to be executed before each request
-@app.before_request
-def before_request():
-    print("Executing before_request function.")
-    # You can perform any setup or validation tasks here if needed.
-    # For example, you can access request data using `request` object.
+# Exemples de tests
+tests = [
+    "utilisateur@example.com:Adentifiant_123",
+    "john.doe123@example-domain.com:ano$her_id",
+    "test.email@example-domain.:my_id_456",
+    "invalid-email-address",  # Cette entrée ne correspond pas au motif
+    "email@domain.com:invalid_id",  # Cette entrée ne correspond pas au motif
+    "bob@gmail.com:toto1234"
+]
 
-# Route definition
-@app.route('/hello')
-def index():
-    user_agent = request.headers.get('User-Agent')
-    user_auth = request.headers
-    #('Authorization')
-    #print(request.path)
-    #print(user_agent)
-    #if 'Authorization' in user_agent:
-    print(type(user_auth))
-    print(user_auth.get('Authorization'))
-    
-    
-    return 'Hello, World!'
-
-if __name__ == '__main__':
-    app.run(debug=True)
+for test in tests:
+    if re.match(pattern, test):
+        print(f"{test} est une correspondance valide.")
+    else:
+        print(f"{test} ne correspond pas au motif.")
 

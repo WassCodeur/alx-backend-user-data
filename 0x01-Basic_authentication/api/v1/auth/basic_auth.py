@@ -3,6 +3,7 @@
 
 from api.v1.auth.auth import Auth
 from base64 import *
+import re
 
 class BasicAuth(Auth):
     """basic auth class inherit from
@@ -30,3 +31,19 @@ class BasicAuth(Auth):
                return b64_to_b.decode('utf-8')
             except Exception:
                 return None
+
+    def extract_user_credentials(self, decoded_base64_authorization_header: str) -> (str, str):
+        #pattern = (r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]+:[a-zA-Z0-9_.+-]+$')
+        pattern = r":"
+        if decoded_base64_authorization_header is None or type(decoded_base64_authorization_header) is not str:
+            return (None, None)
+        else:
+            if re.search(pattern, decoded_base64_authorization_header):
+                to_list = decoded_base64_authorization_header.split(":")
+                return tuple(to_list)
+                #return (to_list[0], to_list[1])
+            else:
+                return (None, None)
+
+
+
