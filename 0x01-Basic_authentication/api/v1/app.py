@@ -18,8 +18,12 @@ auth = getenv("AUTH_TYPE", None)
 if auth:
     auth = Auth()
 
+
 @app.before_request
 def before_request():
+    """before request
+    """
+
     paths = ['/api/v1/status/', '/api/v1/unauthorized/', '/api/v1/forbidden/']
 
     if auth is None:
@@ -45,6 +49,7 @@ def unauthorized(error) -> str:
     """unauthorized handler
     """
     return jsonify({"error": "Unauthorized"}), 401
+
 
 @app.errorhandler(403)
 def forbidden(error) -> str:
